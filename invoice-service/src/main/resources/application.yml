@@ -1,0 +1,21 @@
+micronaut:
+  application:
+    name: invoice app
+  heartbeat:
+    enabled: false
+  health:
+    monitor:
+      enabled: false
+
+endpoints:
+  health:
+    details-visible: ANONYMOUS
+  info:
+    enabled: true
+    sensitive: false
+
+info:
+  version: $project.version
+  name: 'invoice service'
+
+

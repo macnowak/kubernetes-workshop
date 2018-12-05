@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-rental-deployment
+  labels:
+    app: video-rental-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: video-rental-app
+  template:
+    metadata:
+      labels:
+        app: video-rental-app
+    spec:
+      containers:
+      - name: video-rental-app
+        image: macnowak/video-rental-app:0.1.1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MICRONAUT_HTTP_SERVICES_INVOICE_URLS
+          value: http://invoice-app-service:8080

@@ -1,0 +1,97 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.5.RELEASE"
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.15"
+        classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.19.2")
+    }
+}
+
+plugins {
+    id 'java'
+    id 'io.franzbecker.gradle-lombok' version '1.14'
+    id 'pl.allegro.tech.build.axion-release' version '1.10.0'
+}
+
+apply plugin:"io.spring.dependency-management"
+apply plugin:"com.github.johnrengelman.shadow"
+apply plugin:"application"
+apply plugin:"java"
+apply plugin:"groovy"
+apply plugin:"net.ltgt.apt-eclipse"
+apply plugin:"net.ltgt.apt-idea"
+apply plugin: 'com.palantir.docker'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
+    }
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    compileOnly "io.micronaut:micronaut-inject-java"
+    compile "io.micronaut:micronaut-http-client"
+    compile "io.micronaut:micronaut-http-server-netty"
+    compile "io.micronaut:micronaut-inject"
+    compile "io.micronaut:micronaut-runtime"
+    compile "io.micronaut:micronaut-management"
+
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.2-groovy-2.5'
+    testCompile "io.micronaut:micronaut-inject-java"
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
+
+
+
+group 'pl.decerto.workshop.kubernetes'
+
+mainClassName = "pl.decerto.workshop.kubernetes.invoice.Application"
+compileJava.options.compilerArgs += '-parameters'
+compileTestJava.options.compilerArgs += '-parameters'
+
+
+
+// release part
+
+scmVersion {
+    tag {
+        prefix = 'invoice'
+    }
+    versionCreator 'versionWithBranch'
+    repository {
+        directory = project.rootProject.file('../')
+    }
+}
+
+project.version = scmVersion.version
+
+processResources {
+    expand(project.properties)
+}
+
+// Building docker image
+docker {
+    name "macnowak/invoice-app:"+project.version //image name
+    dockerfile file('./docker') //path to dockerfile
+    files shadowJar.archivePath //path to jar file
+    buildArgs(['JAR_FILE': "${shadowJar.archiveName}"]) // pass to JAR_FILE arg jar file
+}

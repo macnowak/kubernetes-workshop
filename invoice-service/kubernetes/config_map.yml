@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: invoice-service-config
+  namespace: default
+data:
+  info.name: "override invoice service name"

@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: invoice-app-service
+spec:
+  selector:
+    app: invoice-app
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8080

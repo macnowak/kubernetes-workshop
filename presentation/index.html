@@ -1,0 +1,453 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white-custom.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+
+	<body>
+	<a style="display: block;" href="https://www.decerto.pl">
+		<img style="position: absolute; top: 0; right: 1; border: 0; width: 20%; height: 10%; margin: 4% 5%"
+			 src="img/logo-decerto-big2.png" alt="www.decerto.pl">
+	</a>
+		<div class="reveal">
+			<div class="slides">
+				<section class="intro">
+					<h1>Kubernetes Workshop</h1>
+					<br>
+					<p>Maciej Nowak</p>
+				</section>
+				<section>
+					<h3>What will you learn</h3>
+					<ul>
+						<li class="fragment">What is Cloud Native</li>
+						<li class="fragment">What is Kubernetes</li>
+						<li class="fragment">How to deploy app</li>
+						<li class="fragment">How configuration works</li>
+						<li class="fragment">How to migrate all to GCP</li>
+					</ul>
+					<aside class="notes">
+
+					</aside>
+				</section>
+				<section>
+					<h3>App</h3>
+					<pre><code class="bash" data-noescape>git clone https://github.com/macnowak/kubernetes-workshop</code></pre>
+				</section>
+				<section>
+
+					<img src="img/cncf_color.png" class="plain">
+					Founding members included Google, CoreOS, Mesosphere, Red Hat, Twitter, Huawei, Intel, Cisco, IBM, Docker, Univa, and VMware.
+				</section>
+				<section>
+					<p class="fragment">CNCF is an open source software foundation dedicated to making cloud native computing universal and sustainable.</p>
+					<p class="fragment">Cloud native computing uses an open source software stack to deploy applications as microservices, packaging each part into its own container, and dynamically orchestrating those containers to optimize resource utilization.</p>
+					<p class="fragment">Cloud native technologies enable software developers to build great products faster.</p>
+
+					<aside class="notes">
+					 	* Cloud ma być uniwersalny i zrównoważony
+						* Ogarniają mikoserwisy, konteneryzacja, orkiestracja tak aby w sposób optymalny wykorzystywać zasoby
+						* Dzięki narzędziom będzie można tworzyć i dostarczać szybciej
+					</aside>
+
+				</section>
+				<section>
+					<img src="img/cncf_projects_1.png" class="plain" width="70%" height="70%">
+					<aside class="notes">
+						* helm - potem opowiem
+						* etcd - rozproszone przechowywanie key - value ( używane w k8s )
+					</aside>
+				</section>
+				<section>
+					<img src="img/cncf_projects_2.png" class="plain" width="80%" height="80%">
+				</section>
+				<section>
+					<img src="img/kubernetes-horizontal-color.png" class="plain">
+				</section>
+				<section>
+					<h3>What is Kubernetes</h3>
+
+					<p class="fragment">Kubernetes coordinates a highly available cluster of computers that are connected to work as a single unit.</p>
+					<p class="fragment">The abstractions in Kubernetes allow you to deploy containerized applications to a cluster without tying them specifically to individual machines.</p>
+					<p class="fragment">Kubernetes automates the distribution and scheduling of application containers across a cluster in a more efficient way.</p>
+					<p class="fragment">Kubernetes is an open-source platform and is production-ready.</p>
+					<aside class="notes">
+						* koordynuje działanie wielu maszyn połączonych w klaster
+						* Abstrakcja nad wieloma maszynami - sam ogarnia przydzielanie zasobów
+						* Automatyzuje uruchamianie kontenerów w klastrze
+						* Open source
+					</aside>
+				</section>
+				<section>
+					<h3>Overall</h3>
+					<p>Platform agnostic</p>
+					<p>Is all about running and orchestraiting containerized apps.</p>
+				</section>
+				<section>
+					<h3>Cluster</h3>
+					<div class="left">
+						<p class="fragment">Cluster contains master node and nodes</p>
+						<p class="fragment">A node is a VM or a physical computer that serves as a worker machine</p>
+						<p class="fragment">Each node has a Kubelet - agent for managing the node and communicating with the Kubernetes master.</p>
+					</div>
+					<div class="right">
+						<img src="img/module_01_cluster.png" class="plain" >
+					</div>
+				</section>
+				<section>
+					<h3>Master</h3>
+					<p class="fragment">Coordinates all activities in your cluster </p>
+					<p><ul>
+						<li class="fragment">Scheduling applications					</li>
+						<li class="fragment">Maintaining applications' desired state</li>
+						<li class="fragment">Scaling applications</li>
+						<li class="fragment">Rolling out new updates</li>
+					</ul>
+					</p>
+					<aside class="notes">
+						When you deploy applications on Kubernetes, you tell the master to start the application containers.
+						The master schedules the containers to run on the cluster's nodes.
+						The nodes communicate with the master using the Kubernetes API, which the master exposes.
+						End users can also use the Kubernetes API directly to interact with the cluster.
+					</aside>
+				</section>
+				<section>
+					<h3>Master</h3>
+					<div class="left">
+						<p class="fragment">Master should be free of work load</p>
+						<p class="fragment">Cluster store - saves data, uses etcd ( distributed kv store )</p>
+						<p class="fragment">Controller - node controller, endpoint controller</p>
+						<p class="fragment">Scheduler - watches for new pods</p>
+						<p class="fragment">Apiserver - api, consumes json, exposes rest api</p>
+					</div>
+					<div class="right">
+						<img src="img/master_node.png" class="plain" >
+					</div>
+				</section>
+				<section>
+					<h3>Node</h3>
+					<p class="fragment">VM or a physical computer that serves as a worker</p>
+					<p class="fragment">A Kubernetes cluster that handles production traffic should have a minimum of three nodes.</p>
+					<p class="fragment">The node should also have tools for handling container operations</p>
+				</section>
+				<section>
+					<h3>Node</h3>
+					<div class="left">
+						<p class="fragment">Kubelet - communication between the Master and the Node; it manages the Pods and the containers running on a machine. Reports to master the status of pods.</p>
+						<p class="fragment">A container runtime (Docker, rkt) responsible for pulling the container image, unpacking, and running the application.</p>
+						<p class="fragment">Kube-proxy - handles network staff, load balances</p>
+					</div>
+					<div class="right">
+						<img src="img/node.png" class="plain">
+					</div>
+				</section>
+				<section>
+					<h3>Pod</h3>
+					<div class="left">
+						<p class="fragment">Atomic unit on the Kubernetes platform</p>
+						<p class="fragment">Abstraction that represents a group of one or more application containers</p>
+						<p class="fragment">Shared storage - as Volumes</p>
+						<p class="fragment">Networking - as a unique cluster IP address</p>
+						<p class="fragment">Can contain different application containers which are relatively tightly coupled</p>
+					</div>
+					<div class="right">
+						<img src="img/module_03_nodes.png" class="plain">
+					</div>
+				</section>
+				<section>
+					<h3>Pod</h3>
+
+					<div class="left">
+						<p class="fragment">The containers in a Pod share an IP Address and port space, are always co-located and co-scheduled, and run in a shared context on the same Node.</p>
+						<p class="fragment">Each Pod in a Kubernetes cluster has a unique IP address, even Pods on the same Node, those IPs are not exposed outside the cluster without a Service.</p>
+						<p class="fragment">Can't relay on pod ip. When pod’s dies it can be restored in different node with different ip.</p>
+					</div>
+					<div class="right">
+						<img src="img/module_03_nodes.png" class="plain">
+					</div>
+				</section>
+
+				<section>
+					<h3>Minikube</h3>
+					<img src="img/minikube.png" class="plain">
+					Lightweight Kubernetes implementation that creates a VM on your local machine and deploys a simple cluster containing only one node.
+				</section>
+				<section>
+					<h3>Workshop 1</h3>
+					<pre><code class="Bash">minikube version
+minikube start
+kubectl version
+minikube dashboard
+kubectl cluster-info
+Kubectl get nodes
+</code></pre>
+					<aside class="notes">
+						1. Weryfikacja wersji minikube
+							Minikube version
+						2. Odpalenie klastra
+							minikube start
+							kubectl version
+						3. Access Kubernetes dashboard
+							minikube dashboard
+							http://127.0.0.1:52363/api/v1/namespaces/kube-system/services/http:kubernetes-dashboard:/proxy/#!/overview?namespace=default
+						4. Get cluster info
+							kubectl cluster-info
+						5. Get nodes
+							kubectl get nodes
+
+					</aside>
+				</section>
+				<section>
+					<h3>Deployment</h3>
+					<p class="fragment">The Deployment instructs Kubernetes how to create and update instances of your application. </p>
+					<p class="fragment">Once you've created a Deployment, the Kubernetes master schedules mentioned application instances onto individual Nodes in the cluster.</p>
+					<p class="fragment">Kubernetes Deployment Controller continuously monitors those instances.</p>
+					<p class="fragment">If the Node hosting an instance goes down or is deleted, the Deployment controller replaces it.</p>
+					<p class="fragment">When you create a Deployment, you'll need to specify the container image for your application and the number of replicas that you want to run.</p>
+				</section>
+				<section>
+					<h3>Deployment imperative</h3>
+					<pre><code class="Bash">kubectl run NAME --image=image [--env="key=value"] [--port=port] [--replicas=replicas] .... </code></pre>
+				</section>
+
+				<section>
+					<h3>Deployment declarative</h3>
+					<pre><code class="Bash">kubectl create -f FILENAME</code></pre>
+				</section>
+				<section>
+					<h3>Deployment declarative</h3>
+
+					<pre><code class="yml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invoice-app-deployment
+  labels:
+    app: invoice-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invoice-app
+  template:
+    metadata:
+      labels:
+        app: invoice-app
+    spec:
+      containers:
+      - name: invoice-app
+        image: macnowak/invoice-app:0.1.0
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: invoice-service-config</code></pre>
+
+				</section>
+
+
+				<section>
+					<h3>Workshop 2</h3>
+					<pre><code class="Bash">kubectl run invoice-app-deployment --image=macnowak/invoice-app:0.1.0 --port=8080
+kubectl proxy
+curl http://localhost:8001/version
+kubectl get pods
+export POD_NAME=invoice-app-deployment-68db4b4d44-nr5jg
+curl http://localhost:8001/api/v1/namespaces/default/pods/$POD_NAME/proxy/invoice
+kubectl logs $POD_NAME
+kubectl exec -ti $POD_NAME bash
+kubectl delete deployment invoice-app-deployment
+kubectl create -f deployment.yml</code></pre>
+					<aside class="notes">
+						kubectl run invoice-app-deployment --image=macnowak/invoice-app:0.1.0 --port=8080
+						kubectl proxy
+						curl http://localhost:8001/version
+						kubectl get pods
+						export POD_NAME=invoice-app-deployment-68db4b4d44-nr5jg
+						curl http://localhost:8001/api/v1/namespaces/default/pods/$POD_NAME/proxy/invoice
+						kubectl logs $POD_NAME
+						kubectl exec -ti $POD_NAME bash
+						kubectl delete deployment invoice-app-deployment
+						kubectl create -f deployment.yml
+					</aside>
+				</section>
+				<section>
+					<h3>Service</h3>
+					<p class="fragment">A Service in Kubernetes is an abstraction which defines a logical set of Pods and a policy by which to access them.</p>
+					<p class="fragment">The set of Pods targeted by a Service is usually determined by a LabelSelector</p>
+					<p class="fragment">A Service routes traffic across a set of Pods.</p>
+					<p class="fragment">Abstraction that allow pods to die and replicate in Kubernetes without impacting your application.</p>
+					<p class="fragment">High level, stable abstraction for pods, providing load balancing.</p>
+					<p class="fragment">Pod belongs to service by labels.</p>
+				</section>
+				<section>
+					<h3>Service imperative</h3>
+					<pre><code class="Bash">kubectl  expose (-f FILENAME | TYPE NAME) [--port=port] [--protocol=TCP|UDP|SCTP] [--target-port=number-or-name] [--name=name] [--type=type] .... </code></pre>
+
+				</section>
+				<section>
+					<h3>Service declarative</h3>
+					<pre><code class="Bash">kubectl create -f service.yml</code></pre>
+				</section>
+				<section>
+					<h3>Service declarative</h3>
+					<pre><code class="yml">kind: Service
+apiVersion: v1
+metadata:
+  name: invoice-app-service
+spec:
+  selector:
+    app: invoice-app
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8080</code></pre>
+				</section>
+				<section>
+					<h3>Service types</h3>
+					<ul>
+						<li class="fragment">ClusterIp - stabel internal cluster ip, service is available in cluster, not exposed externally</li>
+						<li class="fragment">NodePort - expose the app outside of the cluster adding cluster-wide port on top of the cluster</li>
+						<li class="fragment">LoadBalancer - integrates nodePort with cloud based load balancer</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Workshop 3</h3>
+					<pre><code class="Bash">kubectl create -f service.yml
+kubectl get services
+kubectl cluster-info
+kubectl describe service invoice-app-service</code></pre>
+				</section>
+
+				<section>
+					<h3>ConfigMaps</h3>
+					<p class="fragment">ConfigMaps bind configuration files, command-line arguments, environment variables, port numbers, and other configuration artifacts to your Pod.</p>
+					<p class="fragment">Separates your configurations from your Pods and components</p>
+					<p class="fragment">Useful for storing and sharing non-sensitive, unencrypted configuration information.</p>
+					<p class="fragment">To use sensitive information in your clusters, you must use Secrets.</p>
+				</section>
+				<section>
+					<h3>Creating ConfigMap</h3>
+					<pre><code class="Bash">kubectl create -f FILENAME</code></pre>
+				</section>
+				<section>
+					<h3>Updating app</h3>
+
+					....
+
+
+				</section>
+				<section>
+					<h3>Workshop 4</h3>
+					<pre><code class="Bash">kubectl apply --record -f deployment.yml
+Kubectl rollout history deployment [deployment_name]
+Kubectl rollout undo deployment [deployment_name] —to-revision=1
+Kubectl rollout status deployment [deployment_name]
+					</code></pre>
+					<aside class="notes">
+						Dodanie config mapy,
+						aktualizacja deploymentu
+
+					</aside>
+				</section>
+
+
+				<section>
+					<h3>Namespaces</h3>
+					<p class="fragment">Kubernetes supports multiple virtual clusters backed by the same physical cluster.</p>
+					<p class="fragment">These virtual clusters are called namespaces.</p>
+					<p class="fragment">Namespaces are intended for use in environments with many users spread across multiple teams, or projects.</p>
+					<p class="fragment">For clusters with a few to tens of users, you should not need to create or think about namespaces at all.</p>
+					<p class="fragment">Namespaces provide a scope for names.</p>
+					<p class="fragment">Names of resources need to be unique within a namespace, but not across namespaces.</p>
+				</section>
+
+				<section>
+					<h3>Labels and Selectors</h3>
+					<p class="fragment">Labels are key/value pairs that are attached to objects, such as pods.</p>
+					<p class="fragment">Labels are intended to be used to specify identifying attributes of objects that are meaningful and relevant to users.</p>
+					<p class="fragment">Labels can be used to organize and to select subsets of objects.</p>
+					<p class="fragment">Labels can be attached to at any time.</p>
+					<p class="fragment">Each object can have a set of key/value labels defined.</p>
+					<p class="fragment">Each Key must be unique for a given object.</p>
+				</section>
+				<section>
+					<h3>GCP</h3>
+				</section>
+				<section>
+					<h3>Workshop 5</h3>
+					<pre><code class="Bash">https://console.cloud.google.com/</code></pre>
+					<aside class="notes">
+						Uruchomienie wszystkiego na GCP
+					</aside>
+				</section>
+
+				<section>
+
+					<h3>Concepts</h3>
+					<p>Instances are disposable</p>
+					<p>Retry instead of crashing</p>
+					<aside class="notes">
+						Założenie aplikacji, musi być smiertelna
+
+					</aside>
+				</section>
+				<section>
+					<h3>Statefull services</h3>
+					<img src="img/statefull_service_tweet_1.png" class="plain">
+				</section>
+				<section>
+					<h3>Statefull services</h3>
+					<img src="img/statefull_service_tweet_2.png" class="plain">
+				</section>
+				<section>
+					<h3>Pets vs Cattle</h3>
+					<img src="img/pets-v-cattle2.png" class="plain">
+				</section>
+				<section>
+					<h3>Helm</h3>
+				</section>
+
+
+				<section>
+					<h3>What's next?</h3>
+					<p>https://kubernetes.io/docs/concepts/</p>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				history:true,
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
