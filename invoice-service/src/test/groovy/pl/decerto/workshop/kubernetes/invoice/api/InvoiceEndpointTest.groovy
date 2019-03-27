@@ -70,15 +70,15 @@ class InvoiceEndpointTest extends Specification {
 		e.response.status == HttpStatus.NOT_FOUND
 	}
 
-	def "should get list of invoices"() {
-		when:
-		HttpResponse response = Flowable.fromPublisher(
-				client.exchange(HttpRequest.GET("/invoice"), List))
-				.blockingFirst()
-
-		then:
-		noExceptionThrown()
-		response.status == HttpStatus.OK
-		response.getBody().get().size() == 1
-	}
+//	def "should get list of invoices"() {
+//		when:
+//		HttpResponse response = Flowable.fromPublisher(
+//				client.exchange(HttpRequest.GET("/invoice"), List))
+//				.blockingFirst()
+//
+//		then:
+//		noExceptionThrown()
+//		response.status == HttpStatus.OK
+//		response.getBody().get().size() == 1
+//	}
 }
