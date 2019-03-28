@@ -334,10 +334,10 @@ kubectl describe service invoice-app-service</code></pre>
 
 				<section>
 					<h3>Updating app</h3>
-
-					....
-
-
+					<p>Done with rolling updates. </p>
+					<p>Zero downtime by incrementally updating Pods instances with new ones. </p>
+					<p>The new Pods will be scheduled on Nodes with available resources.</p>
+					<p>Service will load-balance the traffic only to available Pods during the update</p>
 				</section>
 				<section>
 					<h3>Workshop 4</h3>
@@ -345,10 +345,10 @@ kubectl describe service invoice-app-service</code></pre>
 kubectl create -f config_map.yml
 kubectl apply --record -f deployment_v2.yml
 kubectl rollout status deployment invoice-app-deployment
-kubectl get deployments
-kubectl create -f config_map.yml
-kubectl apply --record -f deployment_v2.yml
+kubectl set image --record deployment/invoice-app-deployment invoice-app=macnowak/invoice-app:0.1.1
 kubectl rollout status deployment invoice-app-deployment
+kubectl rollout history deployment invoice-app-deployment
+kubectl rollout undo deployment --to-revision=2 invoice-app-deployment
 					</code></pre>
 					<aside class="notes">
 						Dodanie config mapy,
@@ -365,6 +365,12 @@ kubectl rollout status deployment invoice-app-deployment
 					<p class="fragment">For clusters with a few to tens of users, you should not need to create or think about namespaces at all.</p>
 					<p class="fragment">Namespaces provide a scope for names.</p>
 					<p class="fragment">Names of resources need to be unique within a namespace, but not across namespaces.</p>
+					<aside class="notes">
+
+						Pozwala na stworzenie wielu klastrow na jednym fizycznym środowisku
+
+
+					</aside>
 				</section>
 
 				<section>
@@ -375,6 +381,14 @@ kubectl rollout status deployment invoice-app-deployment
 					<p class="fragment">Labels can be attached to at any time.</p>
 					<p class="fragment">Each object can have a set of key/value labels defined.</p>
 					<p class="fragment">Each Key must be unique for a given object.</p>
+					<aside class="notes">
+
+						Key / Value dodawane do obiektów
+						Mają mieć znaczenie
+						Pozwalają grupować obiekty
+						Mogą być dodane w każdym momencie (kubectl label nodes ...)
+
+					</aside>
 				</section>
 				<section>
 					<h3>Workshop 5</h3>
@@ -402,37 +416,35 @@ kubectl get pods
 						Uruchomienie wszystkiego na GCP
 					</aside>
 				</section>
-
 				<section>
-
-					<h3>Concepts</h3>
-					<p>Instances are disposable</p>
-					<p>Retry instead of crashing</p>
+					<h3>Worth remember</h3>
+					<p class="fragment">Instances are disposable</p>
+					<p class="fragment">Retry instead of crashing</p>
+					<p class="fragment">Shared-nothing architecture</p>
+					<p class="fragment">...</p>
+					<p class="fragment">https://12factor.net/</p>
 					<aside class="notes">
 						Założenie aplikacji, musi być smiertelna
-
 					</aside>
 				</section>
 				<section>
-					<h3>Statefull services</h3>
 					<img src="img/statefull_service_tweet_1.png" class="plain">
 				</section>
 				<section>
-					<h3>Statefull services</h3>
 					<img src="img/statefull_service_tweet_2.png" class="plain">
+				</section>
+				<section>
+					<p>StatefulSets are intended to be used with stateful applications and distributed systems.</p>
+					<p>However, the administration of stateful applications and distributed systems on Kubernetes is a broad, complex topic.</p>
 				</section>
 				<section>
 					<h3>Pets vs Cattle</h3>
 					<img src="img/pets-v-cattle2.png" class="plain">
 				</section>
 				<section>
-					<h3>Helm</h3>
-				</section>
-
-
-				<section>
 					<h3>What's next?</h3>
 					<p>https://kubernetes.io/docs/concepts/</p>
+					<p>https://app.pluralsight.com/library/courses/getting-started-kubernetes/</p>
 				</section>
 			</div>
 		</div>
