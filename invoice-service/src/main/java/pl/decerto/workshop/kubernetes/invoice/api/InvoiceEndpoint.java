@@ -42,6 +42,6 @@ class InvoiceEndpoint {
 
 	@Get(processes = MediaType.APPLICATION_JSON)
 	HttpResponse<List<InvoiceDto>> getAll() {
-		throw new RuntimeException("ERROROR!!!!");
+		return HttpResponse.ok(queryFacade.getInvoices());
 	}
 }
