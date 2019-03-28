@@ -1,3 +1,10 @@
+## Kubernetes workshop
+
+Repo zawiera przykładowe aplikację do uruchomienia na Kubernetes. 
+
+
+
+#### Dalszy rozwój aplikacji 
 * wydawanie wersji invoice service
 * wydawanie wersji movie-renatl 
 	* uspójnić nazwy

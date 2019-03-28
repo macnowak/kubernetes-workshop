@@ -197,20 +197,9 @@ kubectl version
 minikube dashboard
 kubectl cluster-info
 Kubectl get nodes
+Kubectl get pods
 </code></pre>
 					<aside class="notes">
-						1. Weryfikacja wersji minikube
-							Minikube version
-						2. Odpalenie klastra
-							minikube start
-							kubectl version
-						3. Access Kubernetes dashboard
-							minikube dashboard
-							http://127.0.0.1:52363/api/v1/namespaces/kube-system/services/http:kubernetes-dashboard:/proxy/#!/overview?namespace=default
-						4. Get cluster info
-							kubectl cluster-info
-						5. Get nodes
-							kubectl get nodes
 
 					</aside>
 				</section>
@@ -265,26 +254,22 @@ spec:
 				<section>
 					<h3>Workshop 2</h3>
 					<pre><code class="Bash">kubectl run invoice-app-deployment --image=macnowak/invoice-app:0.1.0 --port=8080
+kubectl get deployments
 kubectl proxy
 curl http://localhost:8001/version
 kubectl get pods
 export POD_NAME=invoice-app-deployment-68db4b4d44-nr5jg
 curl http://localhost:8001/api/v1/namespaces/default/pods/$POD_NAME/proxy/invoice
 kubectl logs $POD_NAME
-kubectl exec -ti $POD_NAME bash
+kubectl exec -ti $POD_NAME sh
 kubectl delete deployment invoice-app-deployment
-kubectl create -f deployment.yml</code></pre>
+kubectl get pods
+kubectl get deployments
+kubectl create -f deployment.yml
+kubectl get pods
+kubectl get deployments</code></pre>
 					<aside class="notes">
-						kubectl run invoice-app-deployment --image=macnowak/invoice-app:0.1.0 --port=8080
-						kubectl proxy
-						curl http://localhost:8001/version
-						kubectl get pods
-						export POD_NAME=invoice-app-deployment-68db4b4d44-nr5jg
-						curl http://localhost:8001/api/v1/namespaces/default/pods/$POD_NAME/proxy/invoice
-						kubectl logs $POD_NAME
-						kubectl exec -ti $POD_NAME bash
-						kubectl delete deployment invoice-app-deployment
-						kubectl create -f deployment.yml
+						
 					</aside>
 				</section>
 				<section>
@@ -346,6 +331,7 @@ kubectl describe service invoice-app-service</code></pre>
 					<h3>Creating ConfigMap</h3>
 					<pre><code class="Bash">kubectl create -f FILENAME</code></pre>
 				</section>
+
 				<section>
 					<h3>Updating app</h3>
 
@@ -355,10 +341,14 @@ kubectl describe service invoice-app-service</code></pre>
 				</section>
 				<section>
 					<h3>Workshop 4</h3>
-					<pre><code class="Bash">kubectl apply --record -f deployment.yml
-Kubectl rollout history deployment [deployment_name]
-Kubectl rollout undo deployment [deployment_name] —to-revision=1
-Kubectl rollout status deployment [deployment_name]
+					<pre><code class="Bash">kubectl get deployments
+kubectl create -f config_map.yml
+kubectl apply --record -f deployment_v2.yml
+kubectl rollout status deployment invoice-app-deployment
+kubectl get deployments
+kubectl create -f config_map.yml
+kubectl apply --record -f deployment_v2.yml
+kubectl rollout status deployment invoice-app-deployment
 					</code></pre>
 					<aside class="notes">
 						Dodanie config mapy,
@@ -366,7 +356,6 @@ Kubectl rollout status deployment [deployment_name]
 
 					</aside>
 				</section>
-
 
 				<section>
 					<h3>Namespaces</h3>
@@ -387,6 +376,22 @@ Kubectl rollout status deployment [deployment_name]
 					<p class="fragment">Each object can have a set of key/value labels defined.</p>
 					<p class="fragment">Each Key must be unique for a given object.</p>
 				</section>
+				<section>
+					<h3>Workshop 5</h3>
+					<pre><code class="Bash">cd video-rental-service
+kubectl create -f deployment.yml
+kubectl create -f service.yml
+kubectl scale --replicas=3 deployment video-rental-deployment
+kubectl delete pod xxx
+kubectl get pods
+					</code></pre>
+					<aside class="notes">
+						Dodanie kolejnej usługi,
+						Skalowanie jej
+						pokazanie jak się ona komunikuje
+					</aside>
+				</section>
+
 				<section>
 					<h3>GCP</h3>
 				</section>

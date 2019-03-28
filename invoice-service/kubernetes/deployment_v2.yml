@@ -19,3 +19,6 @@ spec:
         image: macnowak/invoice-app:0.1.0
         ports:
         - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: invoice-service-config

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: video-rental-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: video-rental-app
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: video-rental-app
-        image: macnowak/video-rental-app:0.1.1
+        image: macnowak/video-rental-app:0.1.0
         ports:
         - containerPort: 8080
         env:
